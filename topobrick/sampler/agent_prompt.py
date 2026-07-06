@@ -1,19 +1,3 @@
-"""SYSTEM_PROMPT for the skeleton-based agentic sampler.
-
-The agent is shown an EGOCENTRIC view of the building (its position + what is
-pullable around it + building-wide drivers) and REASONS (chain-of-thought in
-prose) before emitting a fenced json block of PULL requests, which code
-resolves to concrete leaf time-series.
-
-Design notes:
-  - NO strict response_format: free-text CoT first, then a ```json block. A
-    strict schema short-circuits gpt-oss's reasoning (it slot-fills mechanically).
-  - DOMAIN-GENERAL: the target can be any point (temperature, power, pressure,
-    flow, humidity, status). Drivers/peers are reasoned per-target, NOT assumed
-    to be HVAC-thermal. No hardcoded brick_class lists.
-  - Cohort scope is chosen by REASONING (tight vs wide), not a code-side cap.
-"""
-
 SYSTEM_PROMPT = """\
 You are a building-systems engineer choosing covariate time-series to help a
 forecasting model predict a TARGET sensor. The target can be ANY kind of point
