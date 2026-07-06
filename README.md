@@ -11,10 +11,6 @@
   <a href="#license"><img alt="License" src="https://img.shields.io/badge/License-MIT-lightgrey"></a>
 </p> -->
 
-<p align="center">
-  <img src="assets/banner.png" alt="TopoBrick banner" width="85%">
-</p>
-
 ---
 
 ## Overview
@@ -59,11 +55,11 @@ The pipeline has three stages:
 
 We evaluate on three real-world buildings, each with a semantic building KG and installed-sensor readings.
 
-| Building | Location | # Target Points | Train | Val | Test |
-|---|---|---:|---|---|---|
-| **LBNL59** | UC Berkeley, USA | 103 | May–Jul 2020 | Aug 2020 | Sep–Oct 2020 |
-| **BTS-B** | Australia | 57 | Nov 2021–Jan 2022 | Feb 2022 | Mar–Apr 2022 |
-| **BTS-C** | Australia | 619 | Nov 2022–Jan 2023 | Feb 2023 | Mar–Apr 2023 |
+| Building         | Location         | # Target Points | Train              | Val      | Test          |
+| ---------------- | ---------------- | --------------: | ------------------ | -------- | ------------- |
+| **LBNL59** | UC Berkeley, USA |             103 | May–Jul 2020      | Aug 2020 | Sep–Oct 2020 |
+| **BTS-B**  | Australia        |              57 | Nov 2021–Jan 2022 | Feb 2022 | Mar–Apr 2022 |
+| **BTS-C**  | Australia        |             619 | Nov 2022–Jan 2023 | Feb 2023 | Mar–Apr 2023 |
 
 Data is processed to 15-minute granularity. Historical context length `S = 96`, prediction horizons `H ∈ {24, 48, 72, 96}` (i.e., 6 h / 12 h / 18 h / 24 h ahead).
 
@@ -73,33 +69,33 @@ Data is processed to 15-minute granularity. Historical context length `S = 96`, 
 
 Normalized MAE / MSE across three buildings and four horizons. **Bold** = best overall, <u>underline</u> = second-best, shaded = best baseline. Lower is better.
 
-| Method | H | LBNL59 nMAE | LBNL59 nMSE | BTS-B nMAE | BTS-B nMSE | BTS-C nMAE | BTS-C nMSE |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| *Naive* |  |  |  |  |  |  |  |
-| Persistence | 24 | 0.653 | 2.016 | 0.437 | 0.719 | 0.396 | 0.918 |
-| Persistence | 96 | 1.075 | 4.320 | 0.731 | 1.066 | 0.708 | 1.471 |
-| SNaive | 24 | 1.393 | 37.871 | 1.681 | 14.724 | 0.861 | 7.112 |
-| SNaive | 96 | 1.033 | 11.713 | 0.656 | 2.829 | 0.646 | 2.546 |
-| *Full-shot* |  |  |  |  |  |  |  |
-| PatchTST | 24 | <u>0.478</u> | <u>1.119</u> | 0.379 | 0.744 | **0.319** | **0.611** |
-| PatchTST | 96 | <u>0.757</u> | 2.403 | 0.765 | 3.628 | 0.504 | 0.700 |
-| FITS | 24 | 0.505 | 1.288 | 0.342 | 0.455 | 0.352 | 0.620 |
-| FITS | 96 | 0.775 | 2.515 | 0.619 | 0.769 | 0.499 | 0.674 |
-| iTransformer | 24 | 0.481 | 1.188 | 0.347 | 0.613 | 0.323 | <u>0.582</u> |
-| iTransformer | 96 | <u>0.757</u> | 2.429 | 1.155 | 2.573 | 0.503 | 0.690 |
-| DLinear | 24 | 0.495 | 1.241 | 0.343 | 0.463 | 0.343 | 0.612 |
-| DLinear | 96 | 0.753 | 2.423 | 0.641 | 0.861 | 0.504 | 0.700 |
-| *Zero-shot* |  |  |  |  |  |  |  |
-| Moirai 2.0 | 24 | 0.578 | 1.551 | 0.391 | 0.663 | 0.385 | 0.746 |
-| Moirai 2.0 | 96 | 0.953 | 3.164 | 0.623 | 0.853 | 0.648 | 1.201 |
-| TimesFM 2.0 | 24 | 0.546 | 1.543 | 0.360 | 0.558 | 0.359 | 0.648 |
-| TimesFM 2.0 | 96 | 0.917 | 3.406 | 0.567 | 0.806 | 0.615 | 1.135 |
-| Chronos-2 | 24 | 0.519 | 1.351 | <u>0.316</u> | <u>0.510</u> | 0.326 | 0.669 |
-| Chronos-2 | 96 | 0.793 | 2.619 | <u>0.433</u> | <u>0.568</u> | 0.495 | 0.752 |
-| **TopoBrick (ours)** | 24 | **0.475** | **0.976** | **0.295** | **0.439** | **0.319** | 0.664 |
-| **TopoBrick (ours)** | 48 | **0.640** | **1.691** | **0.388** | **0.557** | 0.427 | 0.961 |
-| **TopoBrick (ours)** | 72 | **0.725** | **2.064** | **0.408** | **0.567** | 0.476 | 0.720 |
-| **TopoBrick (ours)** | 96 | **0.768** | **2.228** | **0.413** | **0.505** | 0.502 | 0.779 |
+| Method                     |  H |     LBNL59 nMAE |     LBNL59 nMSE |      BTS-B nMAE |      BTS-B nMSE |      BTS-C nMAE |      BTS-C nMSE |
+| -------------------------- | -: | --------------: | --------------: | --------------: | --------------: | --------------: | --------------: |
+| *Naive*                  |    |                 |                 |                 |                 |                 |                 |
+| Persistence                | 24 |           0.653 |           2.016 |           0.437 |           0.719 |           0.396 |           0.918 |
+| Persistence                | 96 |           1.075 |           4.320 |           0.731 |           1.066 |           0.708 |           1.471 |
+| SNaive                     | 24 |           1.393 |          37.871 |           1.681 |          14.724 |           0.861 |           7.112 |
+| SNaive                     | 96 |           1.033 |          11.713 |           0.656 |           2.829 |           0.646 |           2.546 |
+| *Full-shot*              |    |                 |                 |                 |                 |                 |                 |
+| PatchTST                   | 24 |    <u>0.478</u> |    <u>1.119</u> |           0.379 |           0.744 | **0.319** | **0.611** |
+| PatchTST                   | 96 |    <u>0.757</u> |           2.403 |           0.765 |           3.628 |           0.504 |           0.700 |
+| FITS                       | 24 |           0.505 |           1.288 |           0.342 |           0.455 |           0.352 |           0.620 |
+| FITS                       | 96 |           0.775 |           2.515 |           0.619 |           0.769 |           0.499 |           0.674 |
+| iTransformer               | 24 |           0.481 |           1.188 |           0.347 |           0.613 |           0.323 |    <u>0.582</u> |
+| iTransformer               | 96 |    <u>0.757</u> |           2.429 |           1.155 |           2.573 |           0.503 |           0.690 |
+| DLinear                    | 24 |           0.495 |           1.241 |           0.343 |           0.463 |           0.343 |           0.612 |
+| DLinear                    | 96 |           0.753 |           2.423 |           0.641 |           0.861 |           0.504 |           0.700 |
+| *Zero-shot*              |    |                 |                 |                 |                 |                 |                 |
+| Moirai 2.0                 | 24 |           0.578 |           1.551 |           0.391 |           0.663 |           0.385 |           0.746 |
+| Moirai 2.0                 | 96 |           0.953 |           3.164 |           0.623 |           0.853 |           0.648 |           1.201 |
+| TimesFM 2.0                | 24 |           0.546 |           1.543 |           0.360 |           0.558 |           0.359 |           0.648 |
+| TimesFM 2.0                | 96 |           0.917 |           3.406 |           0.567 |           0.806 |           0.615 |           1.135 |
+| Chronos-2                  | 24 |           0.519 |           1.351 |    <u>0.316</u> |    <u>0.510</u> |           0.326 |           0.669 |
+| Chronos-2                  | 96 |           0.793 |           2.619 |    <u>0.433</u> |    <u>0.568</u> |           0.495 |           0.752 |
+| **TopoBrick (ours)** | 24 | **0.475** | **0.976** | **0.295** | **0.439** | **0.319** |           0.664 |
+| **TopoBrick (ours)** | 48 | **0.640** | **1.691** | **0.388** | **0.557** |           0.427 |           0.961 |
+| **TopoBrick (ours)** | 72 | **0.725** | **2.064** | **0.408** | **0.567** |           0.476 |           0.720 |
+| **TopoBrick (ours)** | 96 | **0.768** | **2.228** | **0.413** | **0.505** |           0.502 |           0.779 |
 
 TopoBrick is the strongest method on **LBNL59** and **BTS-B** at every horizon on both metrics, and stays competitive with per-building supervised models on the large 619-sensor **BTS-C** site — all without any building-specific training.
 
