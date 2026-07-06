@@ -4,12 +4,12 @@
   <b>Agentic Topology Sampling of Exogenous Variables for Zero-Shot Building IoT Forecasting</b>
 </p>
 
-<p align="center">
+<!-- <p align="center">
   <a href="#"><img alt="Paper" src="https://img.shields.io/badge/Paper-SIGSPATIAL%202026-blue"></a>
   <a href="#"><img alt="Zero-Shot" src="https://img.shields.io/badge/Setting-Zero--Shot-brightgreen"></a>
   <a href="#"><img alt="Training-Free" src="https://img.shields.io/badge/Training--Free-Yes-orange"></a>
   <a href="#license"><img alt="License" src="https://img.shields.io/badge/License-MIT-lightgrey"></a>
-</p>
+</p> -->
 
 <p align="center">
   <img src="assets/banner.png" alt="TopoBrick banner" width="85%">
