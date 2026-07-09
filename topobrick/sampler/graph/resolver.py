@@ -17,7 +17,7 @@ from typing import Dict, List, Optional, Set
 
 import pandas as pd
 
-from topobrick.sampler.skeleton import Skeleton
+from topobrick.sampler.graph.skeleton import Skeleton
 
 PROCESSED_ROOT = os.environ.get('TOPOBRICK_DATA_ROOT', os.path.expanduser('~/topobrick_data/processed'))
 POINT_RELS = {"hasPoint", "global_hasPoint"}

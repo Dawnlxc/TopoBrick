@@ -1,3 +1,16 @@
+"""Offline CLI that builds a building's structural skeleton from its
+knowledge-graph parquet files.
+
+Reads data/processed/<DS>/{kg_nodes,kg_edges}.parquet and writes
+data/processed/<DS>/skeleton.json: the Brick-typed structural graph — Equipment /
+Location / Collection / External nodes plus {feeds, hasPart, isLocationOf} edges
+in a single canonical direction, with Points excluded. This is the file that
+skeleton.Skeleton loads at runtime; run it once per building.
+
+Usage:
+  python -m topobrick.sampler.build_skeleton --dataset LBNL59
+  python -m topobrick.sampler.build_skeleton --all
+"""
 from __future__ import annotations
 import argparse
 import json
@@ -6,7 +19,7 @@ from collections import Counter
 
 import pandas as pd
 
-from topobrick.sampler import brick_type as BT
+from topobrick.sampler.graph import brick as BT
 
 PROCESSED_ROOT = os.environ.get('TOPOBRICK_DATA_ROOT', os.path.expanduser('~/topobrick_data/processed'))
 STRUCT_RELS = ("feeds", "hasPart", "isLocationOf")
@@ -24,7 +37,9 @@ def build_skeleton(dataset: str, ttl_path: str = BT.DEFAULT_TTL,
     nodes = pd.read_parquet(os.path.join(proc, "kg_nodes.parquet"))
     edges = pd.read_parquet(os.path.join(proc, "kg_edges.parquet"))
 
-    # 1. Brick top-type per class (ontology + manual overrides).
+    # 1. Brick top-type per class, from the ontology + manual overrides (brick.py).
+    #    Deliberately NOT the dataset's own `node_type` column, which mislabels
+    #    Point subclasses such as Fan_Speed as Equipment.
     class_type = BT.resolve_types(nodes["brick_class"].dropna().unique(),
                                   ttl_path=ttl_path)
     node_class = dict(zip(nodes["node_id"], nodes["brick_class"]))
@@ -43,8 +58,8 @@ def build_skeleton(dataset: str, ttl_path: str = BT.DEFAULT_TTL,
                     if BT.is_structural(ntype(u)) and not bool(has_ts.get(u, False))}
 
     # 3. Structural edges: {feeds,hasPart,isLocationOf}, both endpoints structural.
-    #    `src --rel_canonical--> dst` is ALWAYS the canonical directed edge (same
-    #    convention SparqlHelper uses). We do NOT filter is_inverse: canonical
+    #    `src --rel_canonical--> dst` is ALWAYS the canonical directed edge. We do
+    #    NOT filter is_inverse: canonical
     #    containment (hasPart) is stored ONLY as is_inverse=True rows (the source
     #    TTL used isPartOf), so filtering it out would drop all Building->Floor->
     #    Zone structure. Dedup (src,rel,dst). Points (e.g. Electrical_Meter on a

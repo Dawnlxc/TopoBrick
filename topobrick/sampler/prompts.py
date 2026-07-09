@@ -2,7 +2,7 @@
 
 `SYSTEM_PROMPT` drives the picker; `VERIFIER_SYSTEM_PROMPT` drives the
 independent second-stage audit. Both are the exact strings that produced the
-published `subgraphs_pull/*.json` — treat them as data, not code, and do not
+published `subgraphs/*.json` — treat them as data, not code, and do not
 edit them. Their checksums are recorded in `docs/PROVENANCE.md`.
 
 The picker is shown an egocentric view of the building (its position, what is

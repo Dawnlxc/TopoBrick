@@ -12,8 +12,8 @@ single-path pruning (the up-cone fans IN toward roots, so it stays small).
 from __future__ import annotations
 from typing import Dict, List
 
-from topobrick.sampler.skeleton import Skeleton
-from topobrick.sampler.resolver import LeafResolver
+from topobrick.sampler.graph.skeleton import Skeleton
+from topobrick.sampler.graph.resolver import LeafResolver
 
 
 def derive_spine(leaf: str, skeleton: Skeleton, resolver: LeafResolver) -> Dict:
