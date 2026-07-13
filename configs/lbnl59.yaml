@@ -1,0 +1,21 @@
+# LBNL Building 59.
+#
+#   python -m topobrick.preprocessing.pipeline --config configs/lbnl59.yaml \
+#       --dataset LBNL59 --stop_after l4 \
+#       --start_date 2020-05-01 --end_date 2020-11-01
+
+defaults_from: default.yaml
+
+dataset:
+  name: "LBNL59"
+  raw_subdir: "LBNL59"
+  processed_subdir: "LBNL59"
+
+lbnl59:
+  building_id: "Bldg59"
+  ttl_path: "LBNL59/Building_59/Bldg59_w_occ Brick model.ttl"
+
+# The CSV directory and the unit spreadsheet are NOT configurable — the loaders
+# hard-code `<raw_root>/LBNL59/Building_59/Bldg59_clean data/*.csv` and
+# `<raw_root>/LBNL59/data_description_table_3year_clean_data.xlsx`. Keep the
+# release's directory layout as it ships.

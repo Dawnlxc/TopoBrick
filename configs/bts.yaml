@@ -1,0 +1,30 @@
+# BuildingTimeseries (BTS), all three sites. Shared by the per-site configs;
+# on its own it would process every site into one directory, which is rarely
+# what you want — use configs/bts_site_{a,b,c}.yaml instead.
+#
+# `--dataset BTS` selects the streaming raw loader; the output directory comes
+# from `dataset.processed_subdir`, which each per-site config overrides.
+
+defaults_from: default.yaml
+
+dataset:
+  name: "BTS"
+  raw_subdir: "BTS"
+  processed_subdir: "BTS"
+
+bts:
+  buildings:
+    - building_id: "Site_A"
+      ttl_path: "BTS/Site_A.ttl"
+      pickle_dir: "BTS/Site_Aaa"
+      metadata_csv: "BTS/Site_A_metadata.csv"
+    - building_id: "Site_B"
+      ttl_path: "BTS/Site_B.ttl"
+      pickle_dir: "BTS/Site_Baa"
+      metadata_csv: "BTS/Site_B_metadata.csv"
+    - building_id: "Site_C"
+      ttl_path: "BTS/Site_C.ttl"
+      pickle_dir: "BTS/Site_Caa"
+      metadata_csv: "BTS/Site_C_metadata.csv"
+  # null = every building above. A per-site config narrows this to one.
+  only_buildings: null

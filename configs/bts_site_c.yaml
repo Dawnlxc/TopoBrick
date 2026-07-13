@@ -1,0 +1,18 @@
+# BTS Site_C — the paper's BTS-C. 5347 streams; the largest of the three.
+#
+#   python -m topobrick.preprocessing.pipeline --config configs/bts_site_c.yaml \
+#       --dataset BTS --stop_after l4 \
+#       --start_date 2022-11-01 --end_date 2023-05-01
+
+defaults_from: bts.yaml
+
+dataset:
+  processed_subdir: "BTS_Site_C"
+
+bts:
+  only_buildings: ["Site_C"]
+
+# Single-year window: 2022 has 97.8 % coverage across 5043 active sensors
+# (most of Site_C came online in 2020 and is fully active by 2022).
+split:
+  year: 2022

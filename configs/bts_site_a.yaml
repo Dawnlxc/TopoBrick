@@ -1,0 +1,17 @@
+# BTS Site_A — 8345 streams. Sampled and shipped in outputs/subgraphs/, but NOT
+# one of the paper's three evaluation buildings.
+#
+#   python -m topobrick.preprocessing.pipeline --config configs/bts_site_a.yaml \
+#       --dataset BTS
+
+defaults_from: bts.yaml
+
+dataset:
+  processed_subdir: "BTS_Site_A"
+
+bts:
+  only_buildings: ["Site_A"]
+
+# Single-year window: 2023 has 98.9 % coverage across all 8345 sensors.
+split:
+  year: 2023

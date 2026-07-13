@@ -1,0 +1,17 @@
+# BTS Site_B — the paper's BTS-B. 730 streams.
+#
+#   python -m topobrick.preprocessing.pipeline --config configs/bts_site_b.yaml \
+#       --dataset BTS --stop_after l4 \
+#       --start_date 2021-11-01 --end_date 2022-05-01
+
+defaults_from: bts.yaml
+
+dataset:
+  processed_subdir: "BTS_Site_B"
+
+bts:
+  only_buildings: ["Site_B"]
+
+# Single-year window: 2021 has 98.8 % coverage across all 724 sensors.
+split:
+  year: 2021

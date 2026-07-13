@@ -27,16 +27,17 @@ from topobrick.sampler.graph.resolver import LeafResolver
 from topobrick.sampler.pipeline import process_one_target
 
 PROCESSED_ROOT = os.environ.get('TOPOBRICK_DATA_ROOT', os.path.expanduser('~/topobrick_data/processed'))
+DEFAULT_BASE_URL = os.environ.get('OPENAI_BASE_URL', 'http://127.0.0.1:8000/v1')
 
 
 def forecast_targets(dataset: str) -> list:
     """Authoritative forecastable list:
       is_forecast_target ∩ is_forecast_eligible(brick_class) ∩ is_usable.
-    is_forecast_eligible (exclusion-based; topobrick/cache/eligibility.py)
+    is_forecast_eligible (exclusion-based; topobrick/preprocessing/l3_targets.py)
     drops control/config/actuator/raw-electrical/counter/energy-accumulator classes,
     keeping physical & load quantities. Yields LBNL 107 / Site_B 75 / Site_C 688 / Site_A 1614.
     """
-    from topobrick.cache.eligibility import is_forecast_eligible
+    from topobrick.preprocessing.l3_targets import is_forecast_eligible
     n = pd.read_parquet(os.path.join(PROCESSED_ROOT, dataset, "kg_nodes.parquet"))
     m = n["is_forecast_target"].fillna(False) & n["brick_class"].apply(is_forecast_eligible)
     if "is_usable" in n.columns:
@@ -50,7 +51,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", required=True)
     ap.add_argument("--model", default="openai/gpt-oss-20b")
-    ap.add_argument("--base_url", default="http://127.0.0.1:8000/v1")
+    ap.add_argument("--base_url", default=DEFAULT_BASE_URL)
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--limit", type=int, default=0, help="0 = all targets")
     ap.add_argument("--max_leaves", type=int, default=60)

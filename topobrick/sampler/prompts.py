@@ -1,9 +1,13 @@
 """The two frozen system prompts of the agentic sampler.
 
 `SYSTEM_PROMPT` drives the picker; `VERIFIER_SYSTEM_PROMPT` drives the
-independent second-stage audit. Both are the exact strings that produced the
-published `subgraphs/*.json` — treat them as data, not code, and do not
-edit them. Their checksums are recorded in `docs/PROVENANCE.md`.
+independent second-stage audit. Treat them as data, not code, and do not edit
+them. Their checksums are recorded in `docs/PROVENANCE.md`.
+
+`SYSTEM_PROMPT` is byte-exact: it is the string that produced the published
+`pulls`. `VERIFIER_SYSTEM_PROMPT` carries one known deviation from the run that
+produced the published `leaves` — its closing instruction was reworded for
+presentation. See `docs/PROVENANCE.md` §4 for the checksums and the exact line.
 
 The picker is shown an egocentric view of the building (its position, what is
 pullable around it, building-wide drivers) and reasons in prose before emitting

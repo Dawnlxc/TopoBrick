@@ -1,0 +1,105 @@
+# Shared preprocessing defaults. Per-building configs inherit this via
+# `defaults_from` and override what they need.
+#
+# Paths are relative to the repository root unless absolute (see utils.absjoin),
+# so the layout below expects the raw corpora to sit under `data/raw/`. Neither
+# LBNL Building 59 nor the BuildingTimeseries corpus is redistributed here — see
+# docs/THIRD_PARTY.md for where to get them, then symlink or copy them into
+# place:
+#
+#     data/raw/LBNL59/     ->  the LBNL Building 59 release
+#     data/raw/BTS/        ->  the BuildingTimeseries release
+#
+# To keep the data outside the repository, override `paths` in a config of your
+# own with `defaults_from: configs/lbnl59.yaml` and absolute paths.
+
+paths:
+  raw_root: data/raw
+  processed_root: data/processed
+  outputs_root: outputs
+
+dataset:
+  name: null                 # set by the per-building config
+  raw_subdir: null
+  processed_subdir: null
+
+# -------- time grid --------
+# CAREFUL: `L` and `horizons` here do NOT set the evaluation windows — those come
+# from the pipeline's --lookback / --horizons flags (the paper: L=96, H=24..96).
+# Their only effect is on ingest, which drops a sensor with fewer than
+# `L + max(horizons) + min_required_points_extra` valid steps. The values below
+# are the ones the published data was built with, so a rebuild retains the same
+# sensors; lowering them would silently keep short sensors the paper dropped.
+freq: "15min"
+L: 672
+horizons: [96, 192, 384, 672]
+
+# -------- ingest --------
+preprocessing:
+  drop_missing_ratio: 0.30   # drop a sensor missing more than this fraction
+  max_interpolation_gap: 4   # interpolate interior gaps up to 4 steps (1 h)
+  edge_fill_max: 4           # ffill/bfill at most 4 steps at the series edges
+  manual_mapping_path: null  # optional sensor -> KG node overrides
+
+  # Outage detection on the resampled grid; sets `outage_mask`.
+  stuck_flat_steps: 24       # 24 steps (6 h) of one value = outage
+  drop_to_zero_steps: 12     # 12 steps (3 h) of zeros = outage
+  drop_zero_threshold: 1.0e-3
+  max_horizon_invalid_frac: 0.5
+
+  min_required_points_extra: 0
+  include_control_points_as_context: true
+  allow_control_points_as_target: false
+  loader_shard_size: 500
+
+# -------- L3: which points may be forecast targets --------
+# A first, coarse pass over the Brick class name. The authoritative rule is the
+# exclusion list in l3_targets.is_forecast_eligible, applied on top of this.
+points:
+  forecast_target_include_substrings:
+    - "Sensor"
+    - "Meter"
+    - "Temperature_Sensor"
+    - "Air_Temperature_Sensor"
+    - "Zone_Air_Temperature_Sensor"
+    - "Supply_Air_Temperature_Sensor"
+    - "Return_Air_Temperature_Sensor"
+    - "Water_Temperature_Sensor"
+    - "Flow_Sensor"
+    - "Flow_Rate_Sensor"
+    - "Pressure_Sensor"
+    - "Differential_Pressure_Sensor"
+    - "CO2_Sensor"
+    - "Humidity_Sensor"
+    - "Power_Sensor"
+    - "Electrical_Meter"
+    - "Energy_Meter"
+  forecast_target_exclude_substrings:
+    - "Setpoint"
+    - "Command"
+    - "Status"
+    - "Mode"
+    - "Alarm"
+    - "Fault"
+    - "Availability"
+    - "Enable"
+    - "Occupancy_Command"
+
+# -------- knowledge graph --------
+kg:
+  add_inverse: true
+  online_node_max_radius: 4
+
+# -------- splits --------
+# INERT under `pipeline.py`: it takes the calendar from --start_date/--end_date
+# and the strides from --stride. These keys are read only by the config-driven
+# window builder in l4_window_index.py. Left here so that path still works.
+split:
+  strategy: "monthly"
+  train_months: 3
+  val_months: 1
+  test_months: 2
+  train_stride: 16
+  val_stride: 16
+  test_stride: 16
+  max_windows_per_target_split: -1    # -1 = uncapped
