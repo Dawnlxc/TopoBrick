@@ -1,20 +1,7 @@
-"""Runtime loader and graph operations for a building's structural skeleton.
+"""The building's structural graph, loaded from skeleton.json.
 
-Step 1 of the per-target sampling pipeline: loads the Brick-typed structural
-graph (Equipment/Location/Collection/External nodes plus their canonical
-structural edges) that ``build_skeleton`` wrote offline into ``skeleton.json``,
-and builds bidirectional adjacency exposing two traversals over it:
-
-  - ascend  (up_cone)  : a node's ancestry toward the root(s) — the "you are
-                          here" context. Follows both the feeds-upstream chain
-                          and the containment chain (Floor->Building), so a node
-                          reaches Building whenever the KG has the containment
-                          edges.
-  - descend (subtree)  : all structural descendants of a node — used to resolve
-                          `expand:subtree` pulls (e.g. all zones under one RTU).
-
-No timeseries / point data here — mapping structural nodes to leaf points is
-the resolver's job.
+Ascend to a node's ancestry (its "you are here"), descend into its subtree (every
+zone under an RTU). Structural nodes only — leaves hang off this, they are not in it.
 """
 from __future__ import annotations
 import json

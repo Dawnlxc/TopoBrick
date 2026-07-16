@@ -1,28 +1,3 @@
-"""The two frozen system prompts of the agentic sampler.
-
-`SYSTEM_PROMPT` drives the picker; `VERIFIER_SYSTEM_PROMPT` drives the
-independent second-stage audit. Treat them as data, not code, and do not edit
-them. Their checksums are recorded in `docs/PROVENANCE.md`.
-
-`SYSTEM_PROMPT` is byte-exact: it is the string that produced the published
-`pulls`. `VERIFIER_SYSTEM_PROMPT` carries one known deviation from the run that
-produced the published `leaves` — its closing instruction was reworded for
-presentation. See `docs/PROVENANCE.md` §4 for the checksums and the exact line.
-
-The picker is shown an egocentric view of the building (its position, what is
-pullable around it, building-wide drivers) and reasons in prose before emitting
-a fenced json block of pull requests, which `context.resolve_pulls` turns into
-concrete leaf time-series.
-
-Design notes:
-  - NO strict response_format: free-text reasoning first, then a ```json block.
-    A strict schema short-circuits gpt-oss's reasoning (it slot-fills mechanically).
-  - DOMAIN-GENERAL: the target can be any point (temperature, power, pressure,
-    flow, humidity, status). Drivers and peers are reasoned per-target, NOT
-    assumed to be HVAC-thermal. No hardcoded brick_class lists.
-  - Cohort scope is chosen by reasoning (tight vs wide), not a code-side cap.
-"""
-
 SYSTEM_PROMPT = """\
 You are a building-systems engineer choosing covariate time-series to help a
 forecasting model predict a TARGET sensor. The target can be ANY kind of point

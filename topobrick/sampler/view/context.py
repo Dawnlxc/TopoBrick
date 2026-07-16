@@ -19,7 +19,6 @@ from topobrick.sampler.graph.resolver import LeafResolver
 
 # how many leaf classes to show per histogram
 HIST_TOPK = 12
-SUBTREE_HIST_CAP = 400      # node budget when aggregating a subtree histogram
 
 
 def _short(uri: str, n: int = 14) -> str:

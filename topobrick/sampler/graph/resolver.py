@@ -66,16 +66,10 @@ class LeafResolver:
             for cls in by_cls:
                 self._class_hosts[cls].add(node)
 
-        # orphan recovery: leaves with NO skeleton parent get a synthetic
-        # cluster so the agent still has structural peers. Two kinds:
-        #   - non-skeleton Point parent (e.g. Electrical_*_Meter sub-readings):
-        #     cluster = that parent node.
-        #   - no parent at all (BTS virtual-equipment points): cluster = the
-        #     leaf URI's dotted-path prefix (provider encodes the unmodeled
-        #     equipment there). Validated on Site_C: 78 coherent clusters, each
-        #     one unmodeled AHU/terminal's full point suite.
-        # Only fires for skeleton-orphan leaves; clean (skeleton-reachable)
-        # leaves never touch this. LBNL has no orphans so it never activates.
+        # A leaf with no skeleton parent still needs structural peers, so it gets a
+        # synthetic cluster: its non-skeleton Point parent if it has one, else the
+        # dotted-path prefix of its URI, where the provider encodes the equipment it
+        # never modelled (78 coherent clusters on Site_C). LBNL has no orphans.
         self._leaf_cluster: Dict[str, str] = {}
         self._cluster_members: Dict[str, Dict[str, List[str]]] = defaultdict(
             lambda: defaultdict(list))

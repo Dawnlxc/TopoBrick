@@ -49,21 +49,14 @@ def build_skeleton(dataset: str, ttl_path: str = BT.DEFAULT_TTL,
     def ntype(uri: str) -> str:
         return class_type.get(node_class.get(uri, ""), BT.FALLBACK_TYPE)
 
-    # 2. Structural nodes = type in {Equipment, Location, Collection, External}
-    #    AND not has_ts. A structural-typed node that actually carries a
-    #    timeseries (e.g. Building_Electrical_Meter, which Brick types as
-    #    Equipment but the dataset attaches a reading to) is a PULLABLE LEAF,
-    #    not architecture — leaf membership is has_ts, per the locked convention.
+    # Structural = a structural type AND no timeseries. A Building_Electrical_Meter
+    # is typed Equipment but carries a reading, so it is a leaf, not architecture.
     struct_nodes = {u for u in node_class
                     if BT.is_structural(ntype(u)) and not bool(has_ts.get(u, False))}
 
-    # 3. Structural edges: {feeds,hasPart,isLocationOf}, both endpoints structural.
-    #    `src --rel_canonical--> dst` is ALWAYS the canonical directed edge. We do
-    #    NOT filter is_inverse: canonical
-    #    containment (hasPart) is stored ONLY as is_inverse=True rows (the source
-    #    TTL used isPartOf), so filtering it out would drop all Building->Floor->
-    #    Zone structure. Dedup (src,rel,dst). Points (e.g. Electrical_Meter on a
-    #    feeds edge) are dropped because they are not structural nodes.
+    # Structural edges, both endpoints structural. `is_inverse` is deliberately NOT
+    # filtered: the TTLs write containment as isPartOf, so every hasPart edge is an
+    # inverse row, and dropping them would take the whole Building->Floor->Zone tree.
     rel_col = "rel_canonical" if "rel_canonical" in edges.columns else "rel"
     se = edges[edges[rel_col].isin(STRUCT_RELS)]
     skel_edges = []

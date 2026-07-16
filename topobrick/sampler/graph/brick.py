@@ -1,21 +1,14 @@
-"""Resolve a Brick class name to a top-type -- one of
-{Point, Equipment, Location, Collection, External}.
+"""Brick class -> top-type: Point, Equipment, Location, Collection or External.
 
-Support module for the offline skeleton build (build_skeleton): the top-type
-partitions a building's KG nodes into structure vs. timeseries leaves, which is
-what build_skeleton uses to decide what goes into skeleton.json.
-  - structural node <- top-type in STRUCTURAL_TYPES (Equipment/Location/Collection/External)
-  - pullable leaf   <- top-type == "Point"  (intersected with has_ts downstream)
+The split that matters is structural node vs. pullable leaf. `build_skeleton` uses
+it to decide what goes into skeleton.json; a Point becomes a leaf, everything else
+is structure. (`brick:System` subclasses `brick:Collection`, so a System is
+structure.)
 
-Most classes resolve through the Brick ontology's subClassOf* hierarchy
-(317/346 seen across LBNL59 + BTS_Site_{A,B,C}); a manual override table covers
-the rest: typos in class names (e.g. Locationoratory -> Location), BTS-vs-LBNL
-naming (Outdoor_* here vs Outside_* in Brick 1.2.1) and classes newer than the
-shipped ontology, and dataset extensions that are not Brick classes
-(Unknown_Ext, Sensor_Ext, Electrical_Circuit).
-
-`brick:System` is a subclass of `brick:Collection` (Brick 1.2.1), so System
-nodes resolve to "Collection" and ARE structural.
+Most classes resolve through the ontology's subClassOf* chain. The override table
+covers the rest: typos in the published TTLs, BTS-vs-LBNL naming (`Outdoor_*` vs
+`Outside_*`), classes newer than the bundled ontology, and dataset extensions that
+are not Brick classes at all.
 """
 from __future__ import annotations
 import json
@@ -24,13 +17,14 @@ from typing import Dict, Iterable, List, Optional
 
 BRICK_NS = "https://brickschema.org/schema/Brick#"
 
-# The Brick ontology TTL, bundled at topobrick/data/. Resolved relative to the
-# package, not the working directory. Only the offline skeleton build reads it;
-# the runtime sampler never does. Override with $TOPOBRICK_BRICK_TTL.
+# Bundled at topobrick/data/. Three dirnames, not two: this module lives one level
+# deeper (`sampler/graph/`) than the one in `forecast/`, and copying that file's
+# two-level walk pointed here at a `sampler/data/` that does not exist. Read only
+# by the offline skeleton build. Override with $TOPOBRICK_BRICK_TTL.
 DEFAULT_TTL = os.environ.get(
     "TOPOBRICK_BRICK_TTL",
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                 "data", "Brick1.2.1.ttl"))
+    os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__)))), "data", "Brick1.2.1.ttl"))
 
 # Top-level Brick classes we resolve against (priority order).
 TOP_TYPES = ("Point", "Equipment", "Location", "Collection")
