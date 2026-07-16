@@ -1,15 +1,11 @@
-"""CLI entry point for the agentic subgraph sampler (pipeline step 7).
-
-Loads the building's Skeleton and LeafResolver once, then runs
-pipeline.process_one_target over each forecast target in parallel (spine ->
-egocentric context -> picker LLM pull -> leaf resolution -> optional verifier),
-writes the assembled subgraphs to a single JSON, and prints a quality summary
-(leaf-count distribution, cap hits, fallback/orphan counts).
-
+"""
 Usage:
-  python -m topobrick.sampler.runner --dataset LBNL59 \
-      --model openai/gpt-oss-20b --base_url http://127.0.0.1:8000/v1 \
-      --workers 8 --out outputs/subgraphs/LBNL59.json
+  python -m topobrick.sampler.runner \
+            --dataset LBNL59 \
+            --model openai/gpt-oss-20b \
+            --base_url http://127.0.0.1:8000/v1 \
+            --workers 8 \
+            --out outputs/subgraphs/LBNL59.json 
 """
 from __future__ import annotations
 import argparse
@@ -26,18 +22,15 @@ from topobrick.sampler.graph.skeleton import Skeleton
 from topobrick.sampler.graph.resolver import LeafResolver
 from topobrick.sampler.pipeline import process_one_target
 
+from topobrick.preprocessing.l3_targets import is_forecast_eligible
+
 PROCESSED_ROOT = os.environ.get('TOPOBRICK_DATA_ROOT', os.path.expanduser('~/topobrick_data/processed'))
 DEFAULT_BASE_URL = os.environ.get('OPENAI_BASE_URL', 'http://127.0.0.1:8000/v1')
 
 
 def forecast_targets(dataset: str) -> list:
-    """Authoritative forecastable list:
-      is_forecast_target ∩ is_forecast_eligible(brick_class) ∩ is_usable.
-    is_forecast_eligible (exclusion-based; topobrick/preprocessing/l3_targets.py)
-    drops control/config/actuator/raw-electrical/counter/energy-accumulator classes,
-    keeping physical & load quantities. Yields LBNL 107 / Site_B 75 / Site_C 688 / Site_A 1614.
+    """Authoritative forecastable list of targets
     """
-    from topobrick.preprocessing.l3_targets import is_forecast_eligible
     n = pd.read_parquet(os.path.join(PROCESSED_ROOT, dataset, "kg_nodes.parquet"))
     m = n["is_forecast_target"].fillna(False) & n["brick_class"].apply(is_forecast_eligible)
     if "is_usable" in n.columns:

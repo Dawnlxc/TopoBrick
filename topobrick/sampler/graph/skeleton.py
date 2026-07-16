@@ -1,21 +1,12 @@
-"""The building's structural graph, loaded from skeleton.json.
-
-Ascend to a node's ancestry (its "you are here"), descend into its subtree (every
-zone under an RTU). Structural nodes only — leaves hang off this, they are not in it.
-"""
 from __future__ import annotations
 import json
 import os
 from collections import defaultdict, deque
 from typing import Dict, List, Optional, Set, Tuple
 
-PROCESSED_ROOT = os.environ.get('TOPOBRICK_DATA_ROOT', os.path.expanduser('~/topobrick_data/processed'))
-
-# Canonical structural rels, ordered by ascend priority (lower = preferred).
-# isPointOf (leaf->equipment) is the pre-skeleton step handled by the leaf
-# resolver, so it is not included here.
+PROCESSED_ROOT = os.environ.get('TOPOBRICK_DATA_ROOT', 
+                                os.path.expanduser('~/topobrick_data/processed'))
 ASCEND_PRIORITY = {"feeds": 0, "hasPart": 1, "isLocationOf": 2}
-
 
 class Skeleton:
     def __init__(self, data: dict):

@@ -1,15 +1,3 @@
-"""Step 2 of the runtime pipeline: the LeafResolver, which maps the building's
-structural nodes to the timeseries leaf points that hang off them.
-
-It builds an in-memory point index from the kg_edges point relations (hasPoint /
-global_hasPoint) and exposes it three ways: attach a forecast-target leaf to its
-structural parent(s) (the entry point for deriving the target's ancestry
-up-cone), resolve an agent's class-filtered pull requests into concrete leaf
-URIs, and report which nodes host which point classes for the global-driver
-overview. Leaves that have no structural parent are grouped into synthetic
-clusters here so they still have structural peers; point data is resolved at
-runtime and never stored in skeleton.json.
-"""
 from __future__ import annotations
 import os
 from collections import defaultdict
@@ -19,7 +7,8 @@ import pandas as pd
 
 from topobrick.sampler.graph.skeleton import Skeleton
 
-PROCESSED_ROOT = os.environ.get('TOPOBRICK_DATA_ROOT', os.path.expanduser('~/topobrick_data/processed'))
+PROCESSED_ROOT = os.environ.get('TOPOBRICK_DATA_ROOT', 
+                                os.path.expanduser('~/topobrick_data/processed'))
 POINT_RELS = {"hasPoint", "global_hasPoint"}
 
 
@@ -66,10 +55,6 @@ class LeafResolver:
             for cls in by_cls:
                 self._class_hosts[cls].add(node)
 
-        # A leaf with no skeleton parent still needs structural peers, so it gets a
-        # synthetic cluster: its non-skeleton Point parent if it has one, else the
-        # dotted-path prefix of its URI, where the provider encodes the equipment it
-        # never modelled (78 coherent clusters on Site_C). LBNL has no orphans.
         self._leaf_cluster: Dict[str, str] = {}
         self._cluster_members: Dict[str, Dict[str, List[str]]] = defaultdict(
             lambda: defaultdict(list))
@@ -80,7 +65,7 @@ class LeafResolver:
             if any(self.skel.is_node(p) for p in parents):
                 continue  # skeleton-reachable, not an orphan
             if parents:
-                ck = "node:" + parents[0]            # meter-grouped
+                ck = "node:" + parents[0]
             else:
                 frag = leaf.split("#", 1)[-1] if "#" in leaf else leaf.rsplit("/", 1)[-1]
                 segs = frag.split(".")

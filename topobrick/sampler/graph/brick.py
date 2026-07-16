@@ -1,41 +1,19 @@
-"""Brick class -> top-type: Point, Equipment, Location, Collection or External.
-
-The split that matters is structural node vs. pullable leaf. `build_skeleton` uses
-it to decide what goes into skeleton.json; a Point becomes a leaf, everything else
-is structure. (`brick:System` subclasses `brick:Collection`, so a System is
-structure.)
-
-Most classes resolve through the ontology's subClassOf* chain. The override table
-covers the rest: typos in the published TTLs, BTS-vs-LBNL naming (`Outdoor_*` vs
-`Outside_*`), classes newer than the bundled ontology, and dataset extensions that
-are not Brick classes at all.
-"""
 from __future__ import annotations
 import json
 import os
 from typing import Dict, Iterable, List, Optional
 
+from rdflib import Graph, RDFS, URIRef
+
 BRICK_NS = "https://brickschema.org/schema/Brick#"
 
-# Bundled at topobrick/data/. Three dirnames, not two: this module lives one level
-# deeper (`sampler/graph/`) than the one in `forecast/`, and copying that file's
-# two-level walk pointed here at a `sampler/data/` that does not exist. Read only
-# by the offline skeleton build. Override with $TOPOBRICK_BRICK_TTL.
 DEFAULT_TTL = os.environ.get(
     "TOPOBRICK_BRICK_TTL",
     os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
         os.path.abspath(__file__)))), "data", "Brick1.2.1.ttl"))
 
-# Top-level Brick classes we resolve against (priority order).
 TOP_TYPES = ("Point", "Equipment", "Location", "Collection")
-
-# "External" is synthetic (the dataset's site/weather host `Unknown_Ext`, which
-# hosts OAT/Solar on some BTS buildings); treated as structural so its leaves
-# stay reachable.
 STRUCTURAL_TYPES = frozenset({"Equipment", "Location", "Collection", "External"})
-
-# Classes the shipped Brick ontology cannot resolve. Verified: these 29 are the
-# complete unresolved set across LBNL59 + BTS_Site_{A,B,C}.
 MANUAL_OVERRIDES: Dict[str, str] = {
     # --- Point (sensors / setpoints / meters / flow / speed / count) ---
     "Chilled_Water_Supply_Flow_Rate": "Point",
@@ -72,15 +50,11 @@ MANUAL_OVERRIDES: Dict[str, str] = {
     "Unknown_Ext": "External",
 }
 
-# Type assigned when neither the ontology nor the override table resolves a
-# class. Conservative: keep it OUT of the skeleton (treated as a leaf candidate
-# via has_ts), and surface it loudly so an override can be added.
 FALLBACK_TYPE = "Point"
 
 
 def _build_ancestor_resolver(ttl_path: str):
     """Load the Brick ontology once; return a fn class_name -> top_type|None."""
-    from rdflib import Graph, RDFS, URIRef
     g = Graph()
     g.parse(ttl_path, format="turtle")
     top_uris = {t: URIRef(BRICK_NS + t) for t in TOP_TYPES}

@@ -1,19 +1,12 @@
-"""Ablation samplers — pure-baseline covariate selection for comparison against
-the agentic sampler. No size cap / no agentic-size matching (the agentic sampler
-itself is uncapped); each baseline samples its natural set.
-
-Strategies:
-  1hop      — all has_ts leaves within 1 KG hop of the target (BFS over all
-              Brick relations, both directions). Sparse for point targets.
-  khop      — all has_ts leaves within K hops (default K=3 — the distance at
-              which sibling points of a point target become reachable).
-  same_ont  — all has_ts leaves of the target's own brick_class, building-wide.
-  random    — random has_ts leaves; per-target count matched to that target's
-              khop count (random-vs-structure control at equal size).
-
-Same forecastable target list as the agentic sampler (forecast_targets()), and
-the same record schema (target_uri, nodes, edges, leaves) so one kg_cache
-builder serves every sampler.
+"""
+1hop
+    — all has_ts leaves within 1 KG hop of the target (BFS over all Brick relations, both directions). Sparse for point targets.
+khop
+    — all has_ts leaves within K hops (default K=3 — the distance at which sibling points of a point target become reachable).
+same_ont
+    — all has_ts leaves of the target's own brick_class, building-wide.
+random  
+    — random has_ts leaves; per-target count matched to that target's khop count (random-vs-structure control at equal size).
 
 Usage:
   python -m topobrick.sampler.ablations --dataset LBNL59 \

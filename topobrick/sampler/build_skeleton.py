@@ -1,12 +1,4 @@
-"""Offline CLI that builds a building's structural skeleton from its
-knowledge-graph parquet files.
-
-Reads data/processed/<DS>/{kg_nodes,kg_edges}.parquet and writes
-data/processed/<DS>/skeleton.json: the Brick-typed structural graph — Equipment /
-Location / Collection / External nodes plus {feeds, hasPart, isLocationOf} edges
-in a single canonical direction, with Points excluded. This is the file that
-skeleton.Skeleton loads at runtime; run it once per building.
-
+"""
 Usage:
   python -m topobrick.sampler.build_skeleton --dataset LBNL59
   python -m topobrick.sampler.build_skeleton --all

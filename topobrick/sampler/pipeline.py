@@ -1,14 +1,3 @@
-"""Step 6 of the sampler pipeline: assemble one forecast target's subgraph record.
-
-`process_one_target` derives the target's spine (spine.derive_spine) and egocentric
-context (context.render_context), makes one picker-LLM call, parses the fenced-json
-PULL requests, resolves them to concrete time-series leaves via context.resolve_pulls
-(optionally audited by an independent verifier LLM), and builds a downstream-compatible
-subgraph record. `runner` calls it once per forecast target in a building.
-
-Selection is driven entirely by the agent's reasoning over structure: no TS-data
-inspection, no hardcoded brick_class lists.
-"""
 from __future__ import annotations
 import json
 import time
@@ -24,14 +13,10 @@ from collections import Counter
 from topobrick.sampler.view.context import render_context, resolve_pulls, _short
 from topobrick.sampler.prompts import SYSTEM_PROMPT, VERIFIER_SYSTEM_PROMPT
 
-# Generous runaway-safety ceiling on total leaves per subgraph (NOT cohort
-# tuning — the agent scopes cohorts by reasoning). Rarely binds if the agent
-# pulls a tight neighborhood.
 DEFAULT_MAX_LEAVES = 60
 
 
 def _parse_pulls_block(content: str) -> Dict[str, Any]:
-    """Extract the agent's json pulls block from its free-text (CoT) output."""
     if not content:
         return {}
     m = re.search(r"```(?:json)?\s*(\{.*\})\s*```", content, re.DOTALL)
@@ -49,9 +34,6 @@ def _parse_pulls_block(content: str) -> Dict[str, Any]:
 
 def call_llm(client, model: str, user_msg: str, max_tokens: int = 16000,
              return_raw: bool = False, system: str = SYSTEM_PROMPT):
-    """No strict response_format — the agent reasons in prose (CoT in the
-    visible output) then emits a fenced json block we parse. This keeps the
-    chain-of-thought engaged instead of mechanically slot-filling a schema."""
     kwargs = dict(
         model=model,
         messages=[{"role": "system", "content": system},
@@ -149,9 +131,6 @@ def process_one_target(target_uri: str, skel: Skeleton, resolver: LeafResolver,
         add_leaves, drop, verifier_rec = run_verifier(
             client, model, ctx_text, leaves, anchor_map,
             target_uri, skel, resolver)
-        # apply drops first, THEN re-add verifier picks deduped against the KEPT
-        # set (not the original) — so a "drop class X, keep these specific X"
-        # verdict re-instates the wanted leaves instead of blocking them.
         kept = [l for l in leaves if resolver.brick_class.get(l, "?") not in drop]
         seen = set(kept)
         for l in add_leaves:
@@ -161,7 +140,7 @@ def process_one_target(target_uri: str, skel: Skeleton, resolver: LeafResolver,
         leaves = kept
 
     n_pre = len(leaves)
-    leaves = leaves[:max_leaves]   # generous runaway-safety ceiling ONLY
+    leaves = leaves[:max_leaves]
 
     rec = assemble_record(target_uri, skel, resolver, spine, leaves,
                           llm_out, pull_recs, fallback_used=(last_err is not None))

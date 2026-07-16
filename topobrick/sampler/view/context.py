@@ -1,15 +1,3 @@
-"""Renders the egocentric context the picker LLM sees, then resolves its pull
-requests back into concrete timeseries leaves — step 4 of the sampler pipeline
-(after spine derivation, before the pipeline assembles the subgraph record).
-
-render_context turns (target, skeleton, spine, resolver) into the "you are here"
-prompt — the target's position, the peer cohorts and pullable class histograms at
-each ancestor, and building-wide global drivers — labelling anchors A1..An that the
-picker references. resolve_pulls maps those pull requests back to concrete leaf URIs
-via the resolver's primitives (self / subtree / building / cluster).
-
-Deterministic; no LLM call, no timeseries-data inspection beyond has_ts membership.
-"""
 from __future__ import annotations
 from collections import Counter, deque
 from typing import Dict, List, Optional, Tuple
@@ -17,9 +5,7 @@ from typing import Dict, List, Optional, Tuple
 from topobrick.sampler.graph.skeleton import Skeleton
 from topobrick.sampler.graph.resolver import LeafResolver
 
-# how many leaf classes to show per histogram
 HIST_TOPK = 12
-
 
 def _short(uri: str, n: int = 14) -> str:
     s = uri.split("#", 1)[-1] if "#" in uri else uri.rsplit("/", 1)[-1]
@@ -51,15 +37,6 @@ def _order_ancestry(spine: dict, skel: Skeleton) -> List[str]:
 
 
 def _global_hosts(skel: Skeleton, resolver: LeafResolver) -> List[str]:
-    """Building-wide driver hosts (structural heuristic, NOT a class whitelist):
-    LOCATION-typed roots (Building/Site) + their direct children (where weather
-    stations / utility meters attach) + External + Collection nodes, restricted
-    to those that actually host has_ts leaves.
-
-    Equipment roots (e.g. LBNL RTUs, which are roots only because the KG lacks
-    an RTU->Building edge) are NOT global drivers and are excluded — otherwise
-    every top-level RTU pollutes the global list.
-    """
     cand = set()
     loc_roots = [r for r in skel.roots if skel.type_of(r) == "Location"]
     cand.update(loc_roots)
