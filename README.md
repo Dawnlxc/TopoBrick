@@ -1,10 +1,12 @@
-<div align="center">
+<h1 align="left">TopoBrick: <small>Agentic Topology Sampling of Exogenous Variables for Zero-Shot Building IoT Forecasting</small></h1>
 
-## Overview
+<p align="left">
+  <a href="https://arxiv.org/abs/2607.06349"><img src="https://img.shields.io/badge/arXiv-2607.06349-b31b1b.svg" alt="arXiv"></a>
+  <img src="https://img.shields.io/badge/ACM%20SIGSPATIAL%202026-Paper-0A7BBB.svg" alt="ACM SIGSPATIAL 2026">
+  <a href="#license"><img src="https://img.shields.io/badge/License-MIT-lightgrey.svg" alt="MIT License"></a>
+</p>
 
-Building sensors are embedded in physical topology, spatial hierarchy, and operational context, yet existing forecasters often treat them as isolated time series or rely on fixed covariate sets.
-
-TopoBrick is a training-free framework for zero-shot building IoT forecasting. It constructs a compact structural skeleton from a Brick knowledge graph and uses an agentic topology sampler to select target-centric exogenous variables. The selected variables are organized by deployment-time availability, separating past-known sensor states from future-known calendar, schedule, and meteorological inputs. Across three real-world buildings, TopoBrick outperforms strong zero-shot baselines on two of the three and remains competitive with fully trained building-specific models; its gains are concentrated where the routed variables reflect real physical coupling.
+This repository accompanies the [TopoBrick](https://arxiv.org/abs/2607.06349) paper. TopoBrick is a training-free framework for zero-shot building IoT forecasting. It constructs a compact structural skeleton from a Brick knowledge graph and uses an agentic topology sampler to select target-centric exogenous variables. The selected variables are organized by deployment-time availability, separating past-known sensor states from future-known calendar, schedule, and meteorological inputs. Across three real-world buildings, TopoBrick outperforms strong zero-shot baselines on two of the three and remains competitive with fully trained building-specific models; its gains are concentrated where the routed variables reflect real physical coupling.
 
 ## Pipeline
 
@@ -12,9 +14,9 @@ TopoBrick is a training-free framework for zero-shot building IoT forecasting. I
   <img src="assets/pipeline.png" alt="TopoBrick pipeline" width="100%">
 </p>
 
-1. **Building skeleton construction:** reduce the Brick knowledge graph to the topology and metadata needed for forecasting.
-2. **Target-centric topology sampling:** use an agent to select physically relevant exogenous variables for each forecast target.
-3. **Zero-shot forecasting:** separate past-known and future-known inputs and supply the resulting context to a frozen time-series foundation model.
+1. **Building Skeleton Construction:** reduce the Brick knowledge graph to the topology and metadata needed for forecasting.
+2. **Target-centric Topology Sampling:** use an agent to select physically relevant exogenous variables for each forecast target.
+3. **Zero-shot Forecasting:** separate past-known and future-known inputs and supply the resulting context to a frozen time-series foundation model.
 
 ## Setup
 
@@ -100,7 +102,8 @@ TopoBrick/
 ├── requirements.txt              pinned reproduction environment
 └── pyproject.toml                package metadata and entry point
 ```
-
+## Update
+🚩 [09/2026] Initial code released for TopoBrick.
 ## Citation
 
 ```bibtex
