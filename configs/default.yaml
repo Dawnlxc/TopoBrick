@@ -1,0 +1,51 @@
+paths:
+  raw_root: data/raw
+  processed_root: data/processed
+
+dataset:
+  name: null
+  raw_subdir: null
+  processed_subdir: null
+
+freq: "15min"
+L: 96
+horizons: [24, 48, 72, 96]
+
+preprocessing:
+  drop_missing_ratio: 0.30
+  max_interpolation_gap: 4
+  edge_fill_max: 4
+  manual_mapping_path: null
+  stuck_flat_steps: 24
+  drop_to_zero_steps: 12
+  drop_zero_threshold: 1.0e-3
+  max_horizon_invalid_frac: 0.05
+  min_required_points_extra: 0
+  include_control_points_as_context: true
+  allow_control_points_as_target: false
+  loader_shard_size: 500
+
+points:
+  forecast_target_include_substrings:
+    - "Sensor"
+    - "Meter"
+  forecast_target_exclude_substrings:
+    - "Setpoint"
+    - "Command"
+    - "Status"
+    - "Mode"
+    - "Alarm"
+    - "Fault"
+    - "Availability"
+    - "Enable"
+    - "Occupancy_Command"
+
+kg:
+  add_inverse: true
+  online_node_max_radius: 4
+
+split:
+  train_months: 3
+  val_months: 1
+  test_months: 2
+  stride: 16

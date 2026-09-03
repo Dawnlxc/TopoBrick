@@ -1,0 +1,18 @@
+defaults_from: default.yaml
+
+dataset:
+  name: "BTS"
+  raw_subdir: "BTS"
+  processed_subdir: "BTS_Site_C"
+
+bts:
+  buildings:
+    - building_id: "Site_C"
+      ttl_path: "BTS/Site_C.ttl"
+      pickle_dir: "BTS/Site_Caa"
+      metadata_csv: "BTS/Site_C_metadata.csv"
+
+split:
+  year: 2022
+  start_date: "2022-11-01"
+  end_date: "2023-05-01"

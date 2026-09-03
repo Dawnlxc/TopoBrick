@@ -1,0 +1,14 @@
+defaults_from: default.yaml
+
+dataset:
+  name: "LBNL59"
+  raw_subdir: "LBNL59"
+  processed_subdir: "LBNL59"
+
+split:
+  start_date: "2020-05-01"
+  end_date: "2020-11-01"
+
+lbnl59:
+  building_id: "Bldg59"
+  ttl_path: "LBNL59/Building_59/Bldg59_w_occ Brick model.ttl"

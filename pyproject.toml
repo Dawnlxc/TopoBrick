@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "topobrick"
+version = "1.0.0"
+description = "Agentic topology sampling over Brick knowledge graphs for building-timeseries forecasting"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "pyarrow>=12",
+    "openai>=1.0",
+    "rdflib>=6.0",
+    "PyYAML>=6.0",
+    "openpyxl>=3.1",
+]
+
+[project.scripts]
+topobrick = "topobrick.run:main"
+
+[project.optional-dependencies]
+forecast = [
+    "torch>=2.2",
+    "chronos-forecasting>=2.2,<2.3",
+    "transformers>=4.55,<5",
+]
+baselines = [
+    "torch>=2.2",
+]
+zeroshot = [
+    "torch>=2.2",
+    "timesfm>=1.3",
+    "uni2ts>=2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Dawnlxc/TopoBrick"
+Paper = "https://arxiv.org/abs/2607.06349"
+
+[tool.setuptools.packages.find]
+include = ["topobrick*"]
+
+[tool.setuptools.package-data]
+topobrick = ["resources/*.ttl", "scripts/*.sh"]
